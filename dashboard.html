@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moeezland Admin Dashboard</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #0b1a33;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #111;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: #1e90ff;
+      font-size: 1.5rem;
+      margin: 0;
+    }
+    header button {
+      background-color: #1e90ff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    header button:hover {
+      background-color: #104d8c;
+    }
+    main {
+      padding: 20px 30px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #111;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+    th {
+      background-color: #1e90ff;
+      color: #fff;
+      position: sticky;
+      top: 0;
+    }
+    input.editable {
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 5px;
+      width: 100%;
+    }
+    button.saveBtn {
+      background-color: #28a745;
+      border: none;
+      padding: 5px 10px;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button.saveBtn:hover {
+      background-color: #1e7e34;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Admin Dashboard</h1>
+  <button id="logoutBtn">Logout</button>
+</header>
+
+<main>
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Civil ID</th>
+        <th>Legal Name</th>
+        <th>Sex</th>
+        <th>Date of Birth</th>
+        <th>Population Number</th>
+        <th>Verified Vehicle Driver?</th>
+        <th>Status</th>
+        <th>Digital ID</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Users will be loaded here dynamically -->
+    </tbody>
+  </table>
+</main>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+  import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCs-pheSxe9bkAqnhG9qOjF7RvFfb9k00A",
+    authDomain: "e-civilian-portal2007.firebaseapp.com",
+    projectId: "e-civilian-portal2007",
+    storageBucket: "e-civilian-portal2007.firebasestorage.app",
+    messagingSenderId: "465001179759",
+    appId: "1:465001179759:web:60a45e286fbf1a39ac7b9a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const usersTableBody = document.querySelector("#usersTable tbody");
+
+  // Load users
+  async function loadUsers() {
+    const usersSnap = await getDocs(collection(db, "users"));
+    usersTableBody.innerHTML = "";
+
+    usersSnap.forEach((userDoc) => {
+      const data = userDoc.data();
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${data.username}</td>
+        <td>${data.email}</td>
+        <td>${data.civilId}</td>
+        <td><input class="editable" value="${data.legalName || ''}" /></td>
+        <td><input class="editable" value="${data.sex || ''}" /></td>
+        <td><input class="editable" value="${data.dob || ''}" /></td>
+        <td><input class="editable" value="${data.populationNumber || ''}" /></td>
+        <td><input class="editable" value="${data.verifiedDriver || ''}" /></td>
+        <td><input class="editable" value="${data.status || ''}" /></td>
+        <td><input class="editable" value="${data.digitalid || ''}" /></td>
+        <td><button class="saveBtn">Save</button></td>
+      `;
+
+      // Save button
+      tr.querySelector(".saveBtn").addEventListener("click", async () => {
+        try {
+          await updateDoc(doc(db, "users", userDoc.id), {
+            legalName: tr.children[3].querySelector("input").value.trim(),
+            sex: tr.children[4].querySelector("input").value.trim(),
+            dob: tr.children[5].querySelector("input").value.trim(),
+            populationNumber: tr.children[6].querySelector("input").value.trim(),
+            verifiedDriver: tr.children[7].querySelector("input").value.trim(),
+            status: tr.children[8].querySelector("input").value.trim(),
+            digitalid: tr.children[9].querySelector("input").value.trim()
+          });
+          alert("User updated successfully!");
+        } catch (err) {
+          alert("Error updating user: " + err.message);
+        }
+      });
+
+      usersTableBody.appendChild(tr);
+    });
+  }
+
+  // Logout button
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "admin index.html";
+  });
+
+  loadUsers();
+</script>
+
+</body>
+</html>
