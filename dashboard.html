@@ -114,7 +114,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
   import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -132,7 +132,7 @@
 
   const usersTableBody = document.querySelector("#usersTable tbody");
 
-  // Load users
+  // Load users function
   async function loadUsers() {
     const usersSnap = await getDocs(collection(db, "users"));
     usersTableBody.innerHTML = "";
@@ -155,7 +155,6 @@
         <td><button class="saveBtn">Save</button></td>
       `;
 
-      // Save button
       tr.querySelector(".saveBtn").addEventListener("click", async () => {
         try {
           await updateDoc(doc(db, "users", userDoc.id), {
@@ -177,13 +176,22 @@
     });
   }
 
+  // Check if user is logged in
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Logged in, load dashboard
+      loadUsers();
+    } else {
+      // Not logged in, redirect to login page
+      window.location.href = "index.html";
+    }
+  });
+
   // Logout button
   document.getElementById("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
     window.location.href = "index.html";
   });
-
-  loadUsers();
 </script>
 
 </body>
