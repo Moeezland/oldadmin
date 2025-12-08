@@ -99,9 +99,7 @@
         <th>Legal Name</th>
         <th>Sex</th>
         <th>Date of Birth</th>
-        <th>Population Number</th>
-        <th>Verified Vehicle Driver?</th>
-        <th>Status</th>
+        <th>Digital ID</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -147,9 +145,7 @@
         <td><input class="editable" value="${data.legalName || ''}" /></td>
         <td><input class="editable" value="${data.sex || ''}" /></td>
         <td><input class="editable" value="${data.dob || ''}" /></td>
-        <td><input class="editable" value="${data.populationNumber || ''}" /></td>
-        <td><input class="editable" value="${data.verifiedDriver || ''}" /></td>
-        <td><input class="editable" value="${data.status || ''}" /></td>
+        <td><input class="editable" value="${data.digitalid || ''}" /></td>
         <td><button class="saveBtn">Save</button></td>
       `;
 
@@ -159,9 +155,7 @@
             legalName: tr.children[3].querySelector("input").value.trim(),
             sex: tr.children[4].querySelector("input").value.trim(),
             dob: tr.children[5].querySelector("input").value.trim(),
-            populationNumber: tr.children[6].querySelector("input").value.trim(),
-            verifiedDriver: tr.children[7].querySelector("input").value.trim(),
-            status: tr.children[8].querySelector("input").value.trim(),
+            digitalid: tr.children[6].querySelector("input").value.trim(),
           });
           alert("User updated successfully!");
         } catch (err) {
